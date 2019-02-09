@@ -16,11 +16,12 @@ namespace LiveSplit.UI.Components
 {
 	
 
-	public partial class CrashNSTLoadRemovalSettings : UserControl
+	public partial class BlackScreenDetectorComponentSettings : UserControl
 	{
 		#region Public Fields
 
 		public bool AutoSplitterEnabled = false;
+		public double MinimumBlackScreenTime = 0.0;
 
 		public bool AutoSplitterDisableOnSkipUntilSplit = false;
 
@@ -97,7 +98,7 @@ namespace LiveSplit.UI.Components
 
 		#region Public Constructors
 
-		public CrashNSTLoadRemovalSettings(LiveSplitState state)
+		public BlackScreenDetectorComponentSettings(LiveSplitState state)
 		{
 			InitializeComponent();
 
@@ -433,8 +434,20 @@ namespace LiveSplit.UI.Components
 
 				if (element["RequiredMatches"] != null)
 				{
-					FeatureDetector.numberOfBinsCorrect = Convert.ToInt32(element["RequiredMatches"].InnerText);
-					requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
+					//FeatureDetector.numberOfBinsCorrect = Convert.ToInt32(element["RequiredMatches"].InnerText);
+
+					MinimumBlackScreenTime = Convert.ToDouble(element["RequiredMatches"].InnerText);
+
+					if (MinimumBlackScreenTime > (double) requiredMatchesUpDown.Maximum)
+					{
+						requiredMatchesUpDown.Value = 0;
+						FeatureDetector.numberOfBinsCorrect = 0;
+						MinimumBlackScreenTime = 0;
+					}
+					else
+					{
+						requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
+					}
 				}
 
 				if (element["SelectedCaptureTitle"] != null)
@@ -725,7 +738,17 @@ namespace LiveSplit.UI.Components
 			selectionTopLeft = new Point(0, 0);
 			selectionBottomRight = new Point(previewPictureBox.Width, previewPictureBox.Height);
 			selectionRectanglePreviewBox = new Rectangle(selectionTopLeft.X, selectionTopLeft.Y, selectionBottomRight.X - selectionTopLeft.X, selectionBottomRight.Y - selectionTopLeft.Y);
-			requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
+			//requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
+			if (FeatureDetector.numberOfBinsCorrect > requiredMatchesUpDown.Maximum)
+			{
+				requiredMatchesUpDown.Value = 0;
+				FeatureDetector.numberOfBinsCorrect = 0;
+				MinimumBlackScreenTime = 0;
+			}
+			else
+			{
+				requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
+			}
 
 			imageCaptureInfo.featureVectorResolutionX = featureVectorResolutionX;
 			imageCaptureInfo.featureVectorResolutionY = featureVectorResolutionY;
@@ -867,7 +890,8 @@ namespace LiveSplit.UI.Components
 
 		private void requiredMatchesUpDown_ValueChanged(object sender, EventArgs e)
 		{
-			FeatureDetector.numberOfBinsCorrect = (int)requiredMatchesUpDown.Value;
+			FeatureDetector.numberOfBinsCorrect = (int) requiredMatchesUpDown.Value;
+			MinimumBlackScreenTime = (double) requiredMatchesUpDown.Value;
 		}
 
 		private void saveDiagnosticsButton_Click(object sender, EventArgs e)

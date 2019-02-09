@@ -7,28 +7,31 @@ using CrashNSaneLoadDetector;
 
 namespace LiveSplit.UI.Components
 {
-    class BlackScreenDetectorComponent : IComponent
-    {
-        public string ComponentName
-        {
-            get { return "Black Screen Detector"; }
-        }
-        public GraphicsCache Cache { get; set; }
+	class BlackScreenDetectorComponent : IComponent
+	{
+		public string ComponentName
+		{
+			get { return "Black Screen Detector"; }
+		}
+		public GraphicsCache Cache { get; set; }
 
 
-        public float PaddingBottom { get { return 0; } }
-        public float PaddingTop { get { return 0; } }
-        public float PaddingLeft { get { return 0; } }
-        public float PaddingRight { get { return 0; } }
+		public float PaddingBottom { get { return 0; } }
+		public float PaddingTop { get { return 0; } }
+		public float PaddingLeft { get { return 0; } }
+		public float PaddingRight { get { return 0; } }
 
-        public bool Refresh { get; set; }
+		public bool Refresh { get; set; }
 
-        public IDictionary<string, Action> ContextMenuControls { get; protected set; }
-		
-		public CrashNSTLoadRemovalSettings settings { get; set; }
+		public IDictionary<string, Action> ContextMenuControls { get; protected set; }
+
+		public BlackScreenDetectorComponentSettings settings { get; set; }
 
 		private bool isLoading = false;
 		private bool isTransition = false;
+		private bool detectionSegmentStarted = false;
+		private bool blackScreenTimerPauseFlag = false;
+		private bool subtractPreBlackScreenTime = false;
 		private int matchingBins = 0;
 		private float numSecondsTransitionMax = 5.0f; // A transition can at most be 5 seconds long, otherwise it is not counted
 
@@ -52,6 +55,7 @@ namespace LiveSplit.UI.Components
 		private List<string> SplitNames;
 		private DateTime lastTime;
 		private DateTime transitionStart;
+		private TimeSpan deltaBlackScreen;
 
 		private DateTime segmentTimeStart;
 		private LiveSplitState liveSplitState;
@@ -61,19 +65,19 @@ namespace LiveSplit.UI.Components
 		private int framesSumRounded = 0;
 		private int framesSinceLastManualSplit = 0;
 		private bool LastSplitSkip = false;
-		
+
 		//private HighResolutionTimer.HighResolutionTimer highResTimer;
 		private List<int> NumberOfLoadsPerSplit;
 
 		public BlackScreenDetectorComponent(LiveSplitState state)
 		{
-			
+
 			GameName = state.Run.GameName;
 			GameCategory = state.Run.CategoryName;
 			NumberOfSplits = state.Run.Count;
 			SplitNames = new List<string>();
 
-			foreach(var split in state.Run)
+			foreach (var split in state.Run)
 			{
 				SplitNames.Add(split.Name);
 			}
@@ -81,8 +85,8 @@ namespace LiveSplit.UI.Components
 			liveSplitState = state;
 			NumberOfLoadsPerSplit = new List<int>();
 			InitNumberOfLoadsFromState();
-			
-			settings = new CrashNSTLoadRemovalSettings(state);
+
+			settings = new BlackScreenDetectorComponentSettings(state);
 			lastTime = DateTime.Now;
 			segmentTimeStart = DateTime.Now;
 			timer = new TimerModel { CurrentState = state };
@@ -112,7 +116,7 @@ namespace LiveSplit.UI.Components
 			NumberOfLoadsPerSplit = new List<int>();
 			NumberOfLoadsPerSplit.Clear();
 
-			if(liveSplitState == null)
+			if (liveSplitState == null)
 			{
 				return;
 			}
@@ -130,7 +134,7 @@ namespace LiveSplit.UI.Components
 		{
 			int numberOfLoads = 0;
 
-			for(int idx = 0; (idx < NumberOfLoadsPerSplit.Count && idx <= splitIndex) ; idx++)
+			for (int idx = 0; (idx < NumberOfLoadsPerSplit.Count && idx <= splitIndex); idx++)
 			{
 				numberOfLoads += NumberOfLoadsPerSplit[idx];
 			}
@@ -162,7 +166,18 @@ namespace LiveSplit.UI.Components
 
 					try
 					{
-						isLoading = FeatureDetector.compareFeatureVectorTransition(features.ToArray(), FeatureDetector.listOfFeatureVectorsEng, out tempMatchingBins, 0.8f, false);
+						isTransition = FeatureDetector.compareFeatureVectorTransition(features.ToArray(), FeatureDetector.listOfFeatureVectorsEng, out tempMatchingBins, 0.8f, false);
+						
+						if(isTransition && blackScreenTimerPauseFlag)
+						{
+							isLoading = true;
+						}
+						else
+						{
+							isLoading = false;
+						}
+
+
 					}
 					catch (Exception ex)
 					{
@@ -170,34 +185,51 @@ namespace LiveSplit.UI.Components
 						Console.WriteLine("Error: " + ex.ToString());
 						throw ex;
 					}
+					
+
+					if (wasTransition == false && isTransition)
+					{
+						//This could be a pre-load transition, start timing it
+						transitionStart = DateTime.Now;
+						wasTransition = true;
+						detectionSegmentStarted = true;
+					}
+
+					if (!isTransition)
+					{
+						wasTransition = false;
+						detectionSegmentStarted = false;
+						blackScreenTimerPauseFlag = false;
+					}
 
 
 					matchingBins = tempMatchingBins;
 
 					timer.CurrentState.IsGameTimePaused = isLoading;
-					
 
-					if (isLoading && !wasLoading)
+					//Console.WriteLine("GAMETIMEPAUSETIME: {0}", timer.CurrentState.GameTimePauseTime);
+
+					TimeSpan delta = (DateTime.Now - transitionStart);
+
+					if(subtractPreBlackScreenTime)
 					{
-						segmentTimeStart = DateTime.Now;
+						subtractPreBlackScreenTime = false;
+						// remove delta, set flag to make sure loading is set
+						timer.CurrentState.SetGameTime(timer.CurrentState.GameTimePauseTime - deltaBlackScreen);
+						Console.WriteLine("Black Screen longer than threshold, pausing!: {0}, {1}", deltaBlackScreen.TotalSeconds, timer.CurrentState.GameTimePauseTime);
 					}
 
-					if (isLoading)
+
+					if (detectionSegmentStarted && ((delta.TotalSeconds > settings.MinimumBlackScreenTime) || settings.MinimumBlackScreenTime <= 0.001))
 					{
-						pausedFramesSegment++;
+						deltaBlackScreen = delta;
+						Console.WriteLine("Black Screen longer than threshold, frame before pausing!: {0}, {1}", deltaBlackScreen.TotalSeconds, timer.CurrentState.GameTimePauseTime);
+						blackScreenTimerPauseFlag = true;
+						detectionSegmentStarted = false;
+						subtractPreBlackScreenTime = true;
 					}
 
-					if (wasLoading && !isLoading)
-					{
-						TimeSpan delta = (DateTime.Now - segmentTimeStart);
-						framesSum += delta.TotalSeconds * 60.0f;
-						int framesRounded = Convert.ToInt32(delta.TotalSeconds * 60.0f);
-						framesSumRounded += framesRounded;
-						Console.WriteLine("SEGMENT FRAMES: {0}, fromTime (@60fps) {1}, timeDelta {2}, totalFrames {3}, fromTime(int) {4}, totalFrames(int) {5}",
-							pausedFramesSegment, delta.TotalSeconds,
-							delta.TotalSeconds * 60.0f, framesSum, framesRounded, framesSumRounded);
-						pausedFramesSegment = 0;
-					}
+
 
 
 					if (settings.AutoSplitterEnabled && !(settings.AutoSplitterDisableOnSkipUntilSplit && LastSplitSkip))
@@ -260,15 +292,15 @@ namespace LiveSplit.UI.Components
 			//skippedPauses -= settings.GetAutoSplitNumberOfLoadsForSplit(liveSplitState.Run[liveSplitState.CurrentSplitIndex + 1].Name);
 			runningFrames = 0;
 			pausedFrames = 0;
-			
+
 			//If we undo a split that already has met the required number of loads, we probably want the number to reset.
-			if(NumberOfLoadsPerSplit[liveSplitState.CurrentSplitIndex] >= settings.GetAutoSplitNumberOfLoadsForSplit(liveSplitState.CurrentSplit.Name))
+			if (NumberOfLoadsPerSplit[liveSplitState.CurrentSplitIndex] >= settings.GetAutoSplitNumberOfLoadsForSplit(liveSplitState.CurrentSplit.Name))
 			{
 				NumberOfLoadsPerSplit[liveSplitState.CurrentSplitIndex] = 0;
 			}
 
 			//Otherwise - we're fine. If it is a split that was skipped earlier, we still keep track of how we're standing.
-			
+
 
 		}
 
@@ -334,18 +366,18 @@ namespace LiveSplit.UI.Components
 			//	System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			//	while (threadRunning)
 			//	{
-					//watch.Restart();
+			//watch.Restart();
 			//		CaptureLoads();
-					//TODO: test rounding of framecounts in output, more importantly:
-					//TEST FINAL TIME TO SEE IF IT IS ACCURATE WITH THIS,
-					//THEN ADD SLEEPS FOR PERFORMANCE
-					//THEN ADJUST FOR BETTER PERFORMANCE
+			//TODO: test rounding of framecounts in output, more importantly:
+			//TEST FINAL TIME TO SEE IF IT IS ACCURATE WITH THIS,
+			//THEN ADD SLEEPS FOR PERFORMANCE
+			//THEN ADJUST FOR BETTER PERFORMANCE
 
-					/*Thread.Sleep(Math.Max((int)(captureDelay - watch.Elapsed.TotalMilliseconds - 1), 0));
-					while(captureDelay - watch.Elapsed.TotalMilliseconds >= 0)
-					{
-						;
-					}*/
+			/*Thread.Sleep(Math.Max((int)(captureDelay - watch.Elapsed.TotalMilliseconds - 1), 0));
+			while(captureDelay - watch.Elapsed.TotalMilliseconds >= 0)
+			{
+				;
+			}*/
 			//	}
 			//});
 			//captureThread.Start();*/
@@ -363,18 +395,18 @@ namespace LiveSplit.UI.Components
 			}
 
 			//If number of splits is different
-			if(newState.Run.Count != liveSplitState.Run.Count)
+			if (newState.Run.Count != liveSplitState.Run.Count)
 			{
 				NumberOfSplits = newState.Run.Count;
 				return true;
 			}
 
 			//Check if any split name is different.
-			for(int splitIdx = 0; splitIdx < newState.Run.Count; splitIdx++)
+			for (int splitIdx = 0; splitIdx < newState.Run.Count; splitIdx++)
 			{
 				if (newState.Run[splitIdx].Name != SplitNames[splitIdx])
 				{
-					
+
 					SplitNames = new List<string>();
 
 					foreach (var split in newState.Run)
@@ -384,13 +416,13 @@ namespace LiveSplit.UI.Components
 
 					return true;
 				}
-					
+
 			}
 
 			return false;
 		}
 		public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height, LayoutMode mode)
-        {
+		{
 			if (SplitsAreDifferent(state))
 			{
 				settings.ChangeAutoSplitSettingsToGameName(GameName, GameCategory);
@@ -410,40 +442,40 @@ namespace LiveSplit.UI.Components
 
 
 
-				CaptureLoads();
+			CaptureLoads();
 
 
 		}
 
-        public void DrawHorizontal(Graphics g, LiveSplitState state, float height, Region clipRegion)
-        {        
-           
-        }
+		public void DrawHorizontal(Graphics g, LiveSplitState state, float height, Region clipRegion)
+		{
 
-        public void DrawVertical(Graphics g, LiveSplitState state, float width, Region clipRegion)
-        {
-           
-        }
-       
-        public float VerticalHeight
-        {
-            get { return 0; }
-        }
+		}
 
-        public float MinimumWidth
-        {
-            get { return 0; }
-        }
+		public void DrawVertical(Graphics g, LiveSplitState state, float width, Region clipRegion)
+		{
 
-        public float HorizontalWidth
-        {
-            get { return 0; }
-        }
+		}
 
-        public float MinimumHeight
-        {
-            get { return 0; }
-        }
+		public float VerticalHeight
+		{
+			get { return 0; }
+		}
+
+		public float MinimumWidth
+		{
+			get { return 0; }
+		}
+
+		public float HorizontalWidth
+		{
+			get { return 0; }
+		}
+
+		public float MinimumHeight
+		{
+			get { return 0; }
+		}
 
 		public System.Xml.XmlNode GetSettings(System.Xml.XmlDocument document)
 		{
@@ -461,12 +493,12 @@ namespace LiveSplit.UI.Components
 		}
 
 		public void RenameComparison(string oldName, string newName)
-        {
-        }
+		{
+		}
 
-        public void Dispose()
-        {
+		public void Dispose()
+		{
 			timer.CurrentState.OnStart -= timer_OnStart;
 		}
-    }
+	}
 }

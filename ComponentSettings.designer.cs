@@ -1,6 +1,6 @@
 ﻿namespace LiveSplit.UI.Components
 {
-	partial class CrashNSTLoadRemovalSettings
+	partial class BlackScreenDetectorComponentSettings
 	{
 		/// <summary> 
 		/// Required designer variable.
@@ -186,6 +186,7 @@
 			this.matchDisplayLabel.Size = new System.Drawing.Size(13, 13);
 			this.matchDisplayLabel.TabIndex = 33;
 			this.matchDisplayLabel.Text = "0";
+			this.matchDisplayLabel.Visible = false;
 			// 
 			// label5
 			// 
@@ -193,20 +194,21 @@
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label5.Location = new System.Drawing.Point(3, 3);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(116, 16);
+			this.label5.Size = new System.Drawing.Size(114, 16);
 			this.label5.TabIndex = 34;
-			this.label5.Text = "Current / Required";
+			this.label5.Text = "Minimum Duration";
 			// 
 			// requiredMatchesUpDown
 			// 
+			this.requiredMatchesUpDown.DecimalPlaces = 2;
 			this.requiredMatchesUpDown.Increment = new decimal(new int[] {
             5,
             0,
             0,
-            0});
-			this.requiredMatchesUpDown.Location = new System.Drawing.Point(67, 21);
+            131072});
+			this.requiredMatchesUpDown.Location = new System.Drawing.Point(40, 22);
 			this.requiredMatchesUpDown.Maximum = new decimal(new int[] {
-            575,
+            20,
             0,
             0,
             0});
@@ -214,10 +216,10 @@
 			this.requiredMatchesUpDown.Size = new System.Drawing.Size(42, 20);
 			this.requiredMatchesUpDown.TabIndex = 36;
 			this.requiredMatchesUpDown.Value = new decimal(new int[] {
-            520,
+            5,
             0,
             0,
-            0});
+            65536});
 			this.requiredMatchesUpDown.ValueChanged += new System.EventHandler(this.requiredMatchesUpDown_ValueChanged);
 			// 
 			// panel1
@@ -382,12 +384,12 @@
 			this.enableAutoSplitterChk.UseVisualStyleBackColor = true;
 			this.enableAutoSplitterChk.CheckedChanged += new System.EventHandler(this.enableAutoSplitterChk_CheckedChanged);
 			// 
-			// CrashNSTLoadRemovalSettings
+			// BlackScreenDetectorComponentSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.tabControl1);
-			this.Name = "CrashNSTLoadRemovalSettings";
+			this.Name = "BlackScreenDetectorComponentSettings";
 			this.Padding = new System.Windows.Forms.Padding(7);
 			this.Size = new System.Drawing.Size(474, 532);
 			((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();

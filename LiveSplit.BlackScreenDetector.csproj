@@ -43,12 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlackScreenDetectorComponent.cs" />
+    <Compile Include="BlackScreenDetectorFactory.cs" />
     <Compile Include="ComponentSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ComponentSettings.designer.cs" />
-    <Compile Include="BlackScreenDetectorComponent.cs" />
-    <Compile Include="BlackScreenDetectorFactory.cs" />
+    <Compile Include="ComponentSettings.designer.cs">
+      <DependentUpon>ComponentSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="DLLImportStuff.cs" />
     <Compile Include="FeatureDetector.cs" />
     <Compile Include="HighResolutionTimer.cs" />
@@ -66,7 +68,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ComponentSettings.resx" />
+    <EmbeddedResource Include="ComponentSettings.resx">
+      <DependentUpon>ComponentSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
