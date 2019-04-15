@@ -1,8 +1,18 @@
-# LiveSplit.CrashNSTLoadRemoval
-LiveSplit component to automatically detect and remove loads from the Crash N Sane Trilogy.
+# LiveSplit.BlackScreenDetector
+LiveSplit component to automatically detect and remove black screens.
 
 This is adapted from my standalone detection tool https://github.com/thomasneff/CrashNSaneTrilogyLoadDetector
 and from https://github.com/Maschell/LiveSplit.PokemonRedBlue for the base component code.
+
+# Other Image/Video-Based AutoSplitters and/or Load Removers
+This component *only removes and detects black screens, nothing else!*
+
+If you want to
+
+ * Auto-split based on a folder of split images: https://github.com/Toufool/Auto-Split by https://github.com/Toufool
+ * Auto-split and remove loads based on scriptable events from a video feed: https://github.com/ROMaster2/LiveSplit.VideoAutoSplit by https://github.com/ROMaster2
+ * Auto-split and remove loads from only the Crash N. Sane Trilogy: https://github.com/thomasneff/LiveSplit.CrashNSTLoadRemoval by https://github.com/thomasneff/.
+
 
 # Special Thanks
 Special thanks go to McCrodi from the Crash Speedrunning Discord, who helped me by providing 1080p/720p captured data and general feedback regarding the functionality.
