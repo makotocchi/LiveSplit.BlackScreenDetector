@@ -46,6 +46,22 @@
 			this.updatePreviewButton = new System.Windows.Forms.Button();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.label19 = new System.Windows.Forms.Label();
+			this.panel3 = new System.Windows.Forms.Panel();
+			this.label16 = new System.Windows.Forms.Label();
+			this.label17 = new System.Windows.Forms.Label();
+			this.numTopLeftRectY = new System.Windows.Forms.NumericUpDown();
+			this.label18 = new System.Windows.Forms.Label();
+			this.numTopLeftRectX = new System.Windows.Forms.NumericUpDown();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.label15 = new System.Windows.Forms.Label();
+			this.label13 = new System.Windows.Forms.Label();
+			this.numBottomRightRectY = new System.Windows.Forms.NumericUpDown();
+			this.label14 = new System.Windows.Forms.Label();
+			this.numBottomRightRectX = new System.Windows.Forms.NumericUpDown();
+			this.lblBlackLevel = new System.Windows.Forms.Label();
+			this.chkRemoveFadeIns = new System.Windows.Forms.CheckBox();
+			this.chkSaveDetectionLog = new System.Windows.Forms.CheckBox();
 			this.chkRemoveTransitions = new System.Windows.Forms.CheckBox();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.chkAutoSplitterDisableOnSkip = new System.Windows.Forms.CheckBox();
@@ -54,6 +70,20 @@
 			this.autoSplitNameLbl = new System.Windows.Forms.Label();
 			this.autoSplitCategoryLbl = new System.Windows.Forms.Label();
 			this.enableAutoSplitterChk = new System.Windows.Forms.CheckBox();
+			this.tabPage3 = new System.Windows.Forms.TabPage();
+			this.devToolsDataBaseFromCaptureImages = new System.Windows.Forms.Button();
+			this.label10 = new System.Windows.Forms.Label();
+			this.devToolsCaptureImageText = new System.Windows.Forms.TextBox();
+			this.devToolsDatabaseButton = new System.Windows.Forms.Button();
+			this.devToolsRecord = new System.Windows.Forms.CheckBox();
+			this.label9 = new System.Windows.Forms.Label();
+			this.devToolsCropY = new System.Windows.Forms.NumericUpDown();
+			this.label8 = new System.Windows.Forms.Label();
+			this.devToolsCropX = new System.Windows.Forms.NumericUpDown();
+			this.label7 = new System.Windows.Forms.Label();
+			this.devToolsCroppedPictureBox = new System.Windows.Forms.PictureBox();
+			this.label12 = new System.Windows.Forms.Label();
+			this.blackLevelNumericUpDown = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.croppedPreviewPictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -61,7 +91,18 @@
 			this.panel1.SuspendLayout();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
+			this.panel3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numTopLeftRectY)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numTopLeftRectX)).BeginInit();
+			this.panel2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numBottomRightRectY)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numBottomRightRectX)).BeginInit();
 			this.tabPage2.SuspendLayout();
+			this.tabPage3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCropY)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCropX)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCroppedPictureBox)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.blackLevelNumericUpDown)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// lblVersion
@@ -76,6 +117,7 @@
 			this.lblVersion.TabIndex = 21;
 			this.lblVersion.Text = "v0.0.0";
 			this.lblVersion.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.lblVersion.Visible = false;
 			// 
 			// processListComboBox
 			// 
@@ -102,7 +144,7 @@
 			// previewPictureBox
 			// 
 			this.previewPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.previewPictureBox.Location = new System.Drawing.Point(31, 122);
+			this.previewPictureBox.Location = new System.Drawing.Point(30, 163);
 			this.previewPictureBox.Name = "previewPictureBox";
 			this.previewPictureBox.Size = new System.Drawing.Size(400, 180);
 			this.previewPictureBox.TabIndex = 24;
@@ -116,7 +158,7 @@
 			// 
 			this.label2.AutoSize = true;
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label2.Location = new System.Drawing.Point(27, 88);
+			this.label2.Location = new System.Drawing.Point(26, 129);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(121, 16);
 			this.label2.TabIndex = 25;
@@ -127,7 +169,7 @@
 			// 
 			this.label11.AutoSize = true;
 			this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label11.Location = new System.Drawing.Point(28, 107);
+			this.label11.Location = new System.Drawing.Point(27, 148);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(304, 12);
 			this.label11.TabIndex = 28;
@@ -137,7 +179,7 @@
 			// 
 			this.label4.AutoSize = true;
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label4.Location = new System.Drawing.Point(27, 305);
+			this.label4.Location = new System.Drawing.Point(27, 346);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(185, 16);
 			this.label4.TabIndex = 30;
@@ -147,9 +189,10 @@
 			// croppedPreviewPictureBox
 			// 
 			this.croppedPreviewPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.croppedPreviewPictureBox.Location = new System.Drawing.Point(31, 323);
+			this.croppedPreviewPictureBox.Location = new System.Drawing.Point(30, 365);
 			this.croppedPreviewPictureBox.Name = "croppedPreviewPictureBox";
-			this.croppedPreviewPictureBox.Size = new System.Drawing.Size(400, 180);
+			this.croppedPreviewPictureBox.Size = new System.Drawing.Size(300, 135);
+			this.croppedPreviewPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.croppedPreviewPictureBox.TabIndex = 29;
 			this.croppedPreviewPictureBox.TabStop = false;
 			// 
@@ -176,12 +219,13 @@
 			this.trackBar1.TabIndex = 31;
 			this.trackBar1.TickFrequency = 25;
 			this.trackBar1.Value = 100;
+			this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
 			this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
 			// 
 			// matchDisplayLabel
 			// 
 			this.matchDisplayLabel.AutoSize = true;
-			this.matchDisplayLabel.Location = new System.Drawing.Point(21, 23);
+			this.matchDisplayLabel.Location = new System.Drawing.Point(9, 9);
 			this.matchDisplayLabel.Name = "matchDisplayLabel";
 			this.matchDisplayLabel.Size = new System.Drawing.Size(13, 13);
 			this.matchDisplayLabel.TabIndex = 33;
@@ -192,7 +236,7 @@
 			// 
 			this.label5.AutoSize = true;
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label5.Location = new System.Drawing.Point(3, 3);
+			this.label5.Location = new System.Drawing.Point(15, 2);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(114, 16);
 			this.label5.TabIndex = 34;
@@ -200,42 +244,43 @@
 			// 
 			// requiredMatchesUpDown
 			// 
-			this.requiredMatchesUpDown.DecimalPlaces = 2;
+			this.requiredMatchesUpDown.DecimalPlaces = 4;
 			this.requiredMatchesUpDown.Increment = new decimal(new int[] {
             5,
             0,
             0,
             131072});
-			this.requiredMatchesUpDown.Location = new System.Drawing.Point(40, 22);
+			this.requiredMatchesUpDown.Location = new System.Drawing.Point(18, 21);
 			this.requiredMatchesUpDown.Maximum = new decimal(new int[] {
             20,
             0,
             0,
             0});
 			this.requiredMatchesUpDown.Name = "requiredMatchesUpDown";
-			this.requiredMatchesUpDown.Size = new System.Drawing.Size(42, 20);
+			this.requiredMatchesUpDown.Size = new System.Drawing.Size(62, 20);
 			this.requiredMatchesUpDown.TabIndex = 36;
 			this.requiredMatchesUpDown.Value = new decimal(new int[] {
-            5,
+            30,
             0,
             0,
-            65536});
+            131072});
 			this.requiredMatchesUpDown.ValueChanged += new System.EventHandler(this.requiredMatchesUpDown_ValueChanged);
 			// 
 			// panel1
 			// 
 			this.panel1.BackColor = System.Drawing.SystemColors.Control;
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.panel1.Controls.Add(this.label12);
+			this.panel1.Controls.Add(this.blackLevelNumericUpDown);
 			this.panel1.Controls.Add(this.saveDiagnosticsButton);
 			this.panel1.Controls.Add(this.updatePreviewButton);
 			this.panel1.Controls.Add(this.label5);
 			this.panel1.Controls.Add(this.requiredMatchesUpDown);
 			this.panel1.Controls.Add(this.scalingLabel);
-			this.panel1.Controls.Add(this.matchDisplayLabel);
 			this.panel1.Controls.Add(this.trackBar1);
-			this.panel1.Location = new System.Drawing.Point(31, 33);
+			this.panel1.Location = new System.Drawing.Point(29, 33);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(400, 52);
+			this.panel1.Size = new System.Drawing.Size(400, 91);
 			this.panel1.TabIndex = 37;
 			// 
 			// saveDiagnosticsButton
@@ -264,6 +309,7 @@
 			// 
 			this.tabControl1.Controls.Add(this.tabPage1);
 			this.tabControl1.Controls.Add(this.tabPage2);
+			this.tabControl1.Controls.Add(this.tabPage3);
 			this.tabControl1.Location = new System.Drawing.Point(0, 0);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
@@ -273,6 +319,13 @@
 			// tabPage1
 			// 
 			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage1.Controls.Add(this.label19);
+			this.tabPage1.Controls.Add(this.panel3);
+			this.tabPage1.Controls.Add(this.panel2);
+			this.tabPage1.Controls.Add(this.lblBlackLevel);
+			this.tabPage1.Controls.Add(this.chkRemoveFadeIns);
+			this.tabPage1.Controls.Add(this.matchDisplayLabel);
+			this.tabPage1.Controls.Add(this.chkSaveDetectionLog);
 			this.tabPage1.Controls.Add(this.chkRemoveTransitions);
 			this.tabPage1.Controls.Add(this.panel1);
 			this.tabPage1.Controls.Add(this.lblVersion);
@@ -290,10 +343,222 @@
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "Setup";
 			// 
+			// label19
+			// 
+			this.label19.AutoSize = true;
+			this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label19.Location = new System.Drawing.Point(339, 363);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(116, 16);
+			this.label19.TabIndex = 47;
+			this.label19.Text = "Crop Rectangle";
+			this.label19.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// panel3
+			// 
+			this.panel3.BackColor = System.Drawing.SystemColors.Control;
+			this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.panel3.Controls.Add(this.label16);
+			this.panel3.Controls.Add(this.label17);
+			this.panel3.Controls.Add(this.numTopLeftRectY);
+			this.panel3.Controls.Add(this.label18);
+			this.panel3.Controls.Add(this.numTopLeftRectX);
+			this.panel3.Location = new System.Drawing.Point(339, 382);
+			this.panel3.Name = "panel3";
+			this.panel3.Size = new System.Drawing.Size(115, 56);
+			this.panel3.TabIndex = 46;
+			// 
+			// label16
+			// 
+			this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label16.AutoSize = true;
+			this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label16.Location = new System.Drawing.Point(25, 0);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(65, 16);
+			this.label16.TabIndex = 45;
+			this.label16.Text = "Top Left";
+			this.label16.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// label17
+			// 
+			this.label17.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label17.AutoSize = true;
+			this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label17.Location = new System.Drawing.Point(76, 14);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(17, 16);
+			this.label17.TabIndex = 43;
+			this.label17.Text = "Y";
+			// 
+			// numTopLeftRectY
+			// 
+			this.numTopLeftRectY.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.numTopLeftRectY.Location = new System.Drawing.Point(65, 31);
+			this.numTopLeftRectY.Maximum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            0});
+			this.numTopLeftRectY.Name = "numTopLeftRectY";
+			this.numTopLeftRectY.Size = new System.Drawing.Size(42, 20);
+			this.numTopLeftRectY.TabIndex = 44;
+			this.numTopLeftRectY.ValueChanged += new System.EventHandler(this.numericUpDown3_ValueChanged);
+			// 
+			// label18
+			// 
+			this.label18.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label18.AutoSize = true;
+			this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label18.Location = new System.Drawing.Point(22, 14);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(16, 16);
+			this.label18.TabIndex = 41;
+			this.label18.Text = "X";
+			// 
+			// numTopLeftRectX
+			// 
+			this.numTopLeftRectX.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.numTopLeftRectX.Location = new System.Drawing.Point(11, 31);
+			this.numTopLeftRectX.Maximum = new decimal(new int[] {
+            400,
+            0,
+            0,
+            0});
+			this.numTopLeftRectX.Name = "numTopLeftRectX";
+			this.numTopLeftRectX.Size = new System.Drawing.Size(42, 20);
+			this.numTopLeftRectX.TabIndex = 42;
+			this.numTopLeftRectX.ValueChanged += new System.EventHandler(this.numericUpDown4_ValueChanged);
+			// 
+			// panel2
+			// 
+			this.panel2.BackColor = System.Drawing.SystemColors.Control;
+			this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.panel2.Controls.Add(this.label15);
+			this.panel2.Controls.Add(this.label13);
+			this.panel2.Controls.Add(this.numBottomRightRectY);
+			this.panel2.Controls.Add(this.label14);
+			this.panel2.Controls.Add(this.numBottomRightRectX);
+			this.panel2.Location = new System.Drawing.Point(339, 444);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(115, 56);
+			this.panel2.TabIndex = 39;
+			// 
+			// label15
+			// 
+			this.label15.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label15.AutoSize = true;
+			this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label15.Location = new System.Drawing.Point(11, 0);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(96, 16);
+			this.label15.TabIndex = 45;
+			this.label15.Text = "Bottom Right";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// label13
+			// 
+			this.label13.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label13.AutoSize = true;
+			this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label13.Location = new System.Drawing.Point(76, 14);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(17, 16);
+			this.label13.TabIndex = 43;
+			this.label13.Text = "Y";
+			// 
+			// numBottomRightRectY
+			// 
+			this.numBottomRightRectY.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.numBottomRightRectY.Location = new System.Drawing.Point(65, 31);
+			this.numBottomRightRectY.Maximum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            0});
+			this.numBottomRightRectY.Name = "numBottomRightRectY";
+			this.numBottomRightRectY.Size = new System.Drawing.Size(42, 20);
+			this.numBottomRightRectY.TabIndex = 44;
+			this.numBottomRightRectY.Value = new decimal(new int[] {
+            180,
+            0,
+            0,
+            0});
+			this.numBottomRightRectY.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+			// 
+			// label14
+			// 
+			this.label14.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.label14.AutoSize = true;
+			this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label14.Location = new System.Drawing.Point(22, 14);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(16, 16);
+			this.label14.TabIndex = 41;
+			this.label14.Text = "X";
+			// 
+			// numBottomRightRectX
+			// 
+			this.numBottomRightRectX.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.numBottomRightRectX.Location = new System.Drawing.Point(11, 31);
+			this.numBottomRightRectX.Maximum = new decimal(new int[] {
+            400,
+            0,
+            0,
+            0});
+			this.numBottomRightRectX.Name = "numBottomRightRectX";
+			this.numBottomRightRectX.Size = new System.Drawing.Size(42, 20);
+			this.numBottomRightRectX.TabIndex = 42;
+			this.numBottomRightRectX.Value = new decimal(new int[] {
+            400,
+            0,
+            0,
+            0});
+			this.numBottomRightRectX.ValueChanged += new System.EventHandler(this.numericUpDown2_ValueChanged);
+			// 
+			// lblBlackLevel
+			// 
+			this.lblBlackLevel.AutoSize = true;
+			this.lblBlackLevel.Location = new System.Drawing.Point(376, 131);
+			this.lblBlackLevel.Name = "lblBlackLevel";
+			this.lblBlackLevel.Size = new System.Drawing.Size(78, 13);
+			this.lblBlackLevel.TabIndex = 41;
+			this.lblBlackLevel.Text = "Black-Level: -1";
+			this.lblBlackLevel.Visible = false;
+			// 
+			// chkRemoveFadeIns
+			// 
+			this.chkRemoveFadeIns.AutoSize = true;
+			this.chkRemoveFadeIns.Checked = true;
+			this.chkRemoveFadeIns.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkRemoveFadeIns.Location = new System.Drawing.Point(346, 145);
+			this.chkRemoveFadeIns.Name = "chkRemoveFadeIns";
+			this.chkRemoveFadeIns.Size = new System.Drawing.Size(109, 17);
+			this.chkRemoveFadeIns.TabIndex = 40;
+			this.chkRemoveFadeIns.Text = "Remove Fade-ins";
+			this.chkRemoveFadeIns.UseVisualStyleBackColor = true;
+			this.chkRemoveFadeIns.Visible = false;
+			this.chkRemoveFadeIns.CheckedChanged += new System.EventHandler(this.chkRemoveFadeIns_CheckedChanged);
+			// 
+			// chkSaveDetectionLog
+			// 
+			this.chkSaveDetectionLog.AutoSize = true;
+			this.chkSaveDetectionLog.Checked = true;
+			this.chkSaveDetectionLog.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkSaveDetectionLog.Location = new System.Drawing.Point(151, 130);
+			this.chkSaveDetectionLog.Name = "chkSaveDetectionLog";
+			this.chkSaveDetectionLog.Size = new System.Drawing.Size(93, 17);
+			this.chkSaveDetectionLog.TabIndex = 39;
+			this.chkSaveDetectionLog.Text = "Detection Log";
+			this.chkSaveDetectionLog.UseVisualStyleBackColor = true;
+			this.chkSaveDetectionLog.CheckedChanged += new System.EventHandler(this.chkSaveDetectionLog_CheckedChanged);
+			// 
 			// chkRemoveTransitions
 			// 
 			this.chkRemoveTransitions.AutoSize = true;
-			this.chkRemoveTransitions.Location = new System.Drawing.Point(311, 87);
+			this.chkRemoveTransitions.Checked = true;
+			this.chkRemoveTransitions.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkRemoveTransitions.Location = new System.Drawing.Point(250, 130);
 			this.chkRemoveTransitions.Name = "chkRemoveTransitions";
 			this.chkRemoveTransitions.Size = new System.Drawing.Size(120, 17);
 			this.chkRemoveTransitions.TabIndex = 38;
@@ -384,6 +649,186 @@
 			this.enableAutoSplitterChk.UseVisualStyleBackColor = true;
 			this.enableAutoSplitterChk.CheckedChanged += new System.EventHandler(this.enableAutoSplitterChk_CheckedChanged);
 			// 
+			// tabPage3
+			// 
+			this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage3.Controls.Add(this.devToolsDataBaseFromCaptureImages);
+			this.tabPage3.Controls.Add(this.label10);
+			this.tabPage3.Controls.Add(this.devToolsCaptureImageText);
+			this.tabPage3.Controls.Add(this.devToolsDatabaseButton);
+			this.tabPage3.Controls.Add(this.devToolsRecord);
+			this.tabPage3.Controls.Add(this.label9);
+			this.tabPage3.Controls.Add(this.devToolsCropY);
+			this.tabPage3.Controls.Add(this.label8);
+			this.tabPage3.Controls.Add(this.devToolsCropX);
+			this.tabPage3.Controls.Add(this.label7);
+			this.tabPage3.Controls.Add(this.devToolsCroppedPictureBox);
+			this.tabPage3.Location = new System.Drawing.Point(4, 22);
+			this.tabPage3.Name = "tabPage3";
+			this.tabPage3.Size = new System.Drawing.Size(468, 506);
+			this.tabPage3.TabIndex = 2;
+			this.tabPage3.Text = "Developer Tools (caution!)";
+			// 
+			// devToolsDataBaseFromCaptureImages
+			// 
+			this.devToolsDataBaseFromCaptureImages.Location = new System.Drawing.Point(154, 269);
+			this.devToolsDataBaseFromCaptureImages.Name = "devToolsDataBaseFromCaptureImages";
+			this.devToolsDataBaseFromCaptureImages.Size = new System.Drawing.Size(158, 36);
+			this.devToolsDataBaseFromCaptureImages.TabIndex = 45;
+			this.devToolsDataBaseFromCaptureImages.Text = "Compute Database";
+			this.devToolsDataBaseFromCaptureImages.UseVisualStyleBackColor = true;
+			this.devToolsDataBaseFromCaptureImages.Click += new System.EventHandler(this.devToolsDataBaseFromCaptureImages_Click);
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label10.Location = new System.Drawing.Point(6, 259);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(142, 16);
+			this.label10.TabIndex = 44;
+			this.label10.Text = "CaptureImages Folder";
+			// 
+			// devToolsCaptureImageText
+			// 
+			this.devToolsCaptureImageText.Location = new System.Drawing.Point(7, 278);
+			this.devToolsCaptureImageText.Name = "devToolsCaptureImageText";
+			this.devToolsCaptureImageText.Size = new System.Drawing.Size(141, 20);
+			this.devToolsCaptureImageText.TabIndex = 43;
+			this.devToolsCaptureImageText.Text = "CaptureImages";
+			// 
+			// devToolsDatabaseButton
+			// 
+			this.devToolsDatabaseButton.Location = new System.Drawing.Point(9, 464);
+			this.devToolsDatabaseButton.Name = "devToolsDatabaseButton";
+			this.devToolsDatabaseButton.Size = new System.Drawing.Size(158, 36);
+			this.devToolsDatabaseButton.TabIndex = 42;
+			this.devToolsDatabaseButton.Text = "Compute Database";
+			this.devToolsDatabaseButton.UseVisualStyleBackColor = true;
+			this.devToolsDatabaseButton.Click += new System.EventHandler(this.devToolsDatabaseButton_Click);
+			// 
+			// devToolsRecord
+			// 
+			this.devToolsRecord.AutoSize = true;
+			this.devToolsRecord.Location = new System.Drawing.Point(112, 359);
+			this.devToolsRecord.Name = "devToolsRecord";
+			this.devToolsRecord.Size = new System.Drawing.Size(98, 17);
+			this.devToolsRecord.TabIndex = 41;
+			this.devToolsRecord.Text = "Record Images";
+			this.devToolsRecord.UseVisualStyleBackColor = true;
+			this.devToolsRecord.CheckedChanged += new System.EventHandler(this.devToolsRecord_CheckedChanged);
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label9.Location = new System.Drawing.Point(57, 340);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(49, 16);
+			this.label9.TabIndex = 39;
+			this.label9.Text = "Crop Y";
+			// 
+			// devToolsCropY
+			// 
+			this.devToolsCropY.Location = new System.Drawing.Point(60, 359);
+			this.devToolsCropY.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+			this.devToolsCropY.Minimum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            -2147483648});
+			this.devToolsCropY.Name = "devToolsCropY";
+			this.devToolsCropY.Size = new System.Drawing.Size(42, 20);
+			this.devToolsCropY.TabIndex = 40;
+			this.devToolsCropY.Value = new decimal(new int[] {
+            460,
+            0,
+            0,
+            -2147483648});
+			this.devToolsCropY.ValueChanged += new System.EventHandler(this.devToolsCropY_ValueChanged);
+			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label8.Location = new System.Drawing.Point(3, 340);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(48, 16);
+			this.label8.TabIndex = 37;
+			this.label8.Text = "Crop X";
+			// 
+			// devToolsCropX
+			// 
+			this.devToolsCropX.Location = new System.Drawing.Point(6, 359);
+			this.devToolsCropX.Maximum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+			this.devToolsCropX.Minimum = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            -2147483648});
+			this.devToolsCropX.Name = "devToolsCropX";
+			this.devToolsCropX.Size = new System.Drawing.Size(42, 20);
+			this.devToolsCropX.TabIndex = 38;
+			this.devToolsCropX.ValueChanged += new System.EventHandler(this.devToolsCropX_ValueChanged);
+			// 
+			// label7
+			// 
+			this.label7.AutoSize = true;
+			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label7.Location = new System.Drawing.Point(25, 23);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(185, 16);
+			this.label7.TabIndex = 32;
+			this.label7.Text = "Cropped Capture Preview";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// devToolsCroppedPictureBox
+			// 
+			this.devToolsCroppedPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.devToolsCroppedPictureBox.Location = new System.Drawing.Point(20, 42);
+			this.devToolsCroppedPictureBox.Name = "devToolsCroppedPictureBox";
+			this.devToolsCroppedPictureBox.Size = new System.Drawing.Size(300, 50);
+			this.devToolsCroppedPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.devToolsCroppedPictureBox.TabIndex = 31;
+			this.devToolsCroppedPictureBox.TabStop = false;
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label12.Location = new System.Drawing.Point(15, 44);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(78, 16);
+			this.label12.TabIndex = 39;
+			this.label12.Text = "Black Level";
+			// 
+			// blackLevelNumericUpDown
+			// 
+			this.blackLevelNumericUpDown.DecimalPlaces = 4;
+			this.blackLevelNumericUpDown.Location = new System.Drawing.Point(18, 63);
+			this.blackLevelNumericUpDown.Maximum = new decimal(new int[] {
+            48,
+            0,
+            0,
+            0});
+			this.blackLevelNumericUpDown.Name = "blackLevelNumericUpDown";
+			this.blackLevelNumericUpDown.Size = new System.Drawing.Size(62, 20);
+			this.blackLevelNumericUpDown.TabIndex = 40;
+			this.blackLevelNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.blackLevelNumericUpDown.ValueChanged += new System.EventHandler(this.blackLevelNumericUpDown_ValueChanged);
+			// 
 			// BlackScreenDetectorComponentSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -401,8 +846,22 @@
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);
 			this.tabPage1.PerformLayout();
+			this.panel3.ResumeLayout(false);
+			this.panel3.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numTopLeftRectY)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numTopLeftRectX)).EndInit();
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numBottomRightRectY)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numBottomRightRectX)).EndInit();
 			this.tabPage2.ResumeLayout(false);
 			this.tabPage2.PerformLayout();
+			this.tabPage3.ResumeLayout(false);
+			this.tabPage3.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCropY)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCropX)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.devToolsCroppedPictureBox)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.blackLevelNumericUpDown)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -434,5 +893,35 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.CheckBox chkAutoSplitterDisableOnSkip;
 		private System.Windows.Forms.CheckBox chkRemoveTransitions;
+    private System.Windows.Forms.CheckBox chkSaveDetectionLog;
+    private System.Windows.Forms.CheckBox chkRemoveFadeIns;
+    private System.Windows.Forms.Label lblBlackLevel;
+    private System.Windows.Forms.TabPage tabPage3;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.PictureBox devToolsCroppedPictureBox;
+    private System.Windows.Forms.Label label8;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.NumericUpDown devToolsCropY;
+    private System.Windows.Forms.NumericUpDown devToolsCropX;
+    private System.Windows.Forms.CheckBox devToolsRecord;
+    private System.Windows.Forms.Button devToolsDatabaseButton;
+    private System.Windows.Forms.Label label10;
+    private System.Windows.Forms.TextBox devToolsCaptureImageText;
+    private System.Windows.Forms.Button devToolsDataBaseFromCaptureImages;
+    private System.Windows.Forms.Panel panel2;
+    private System.Windows.Forms.Panel panel3;
+    private System.Windows.Forms.Label label16;
+    private System.Windows.Forms.Label label17;
+    private System.Windows.Forms.Label label18;
+    private System.Windows.Forms.NumericUpDown numTopLeftRectX;
+    private System.Windows.Forms.Label label15;
+    private System.Windows.Forms.Label label13;
+    private System.Windows.Forms.NumericUpDown numBottomRightRectY;
+    private System.Windows.Forms.Label label14;
+    private System.Windows.Forms.NumericUpDown numBottomRightRectX;
+    private System.Windows.Forms.Label label19;
+    private System.Windows.Forms.NumericUpDown numTopLeftRectY;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.NumericUpDown blackLevelNumericUpDown;
 	}
 }

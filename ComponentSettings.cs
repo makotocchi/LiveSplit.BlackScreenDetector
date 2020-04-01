@@ -7,25 +7,39 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace LiveSplit.UI.Components
 {
-	
+
 
 	public partial class BlackScreenDetectorComponentSettings : UserControl
 	{
 		#region Public Fields
 
 		public bool AutoSplitterEnabled = false;
-		public double MinimumBlackScreenTime = 0.0;
 
 		public bool AutoSplitterDisableOnSkipUntilSplit = false;
 
-		public bool RemoveTransitions = false;
+		public bool RemoveFadeouts = false;
+		public bool RemoveFadeins = false;
+
+		public bool SaveDetectionLog = false;
+
+		public bool RecordImages = false;
+
+		public float MinimumBlackLength = 0.0f;
+		public int BlackLevel = 10;
+
+		public int AverageBlackLevel = -1;
+
+		public string DetectionLogFolderName = "BlackScreenDetectorLog";
 
 		//Number of frames to wait for a change from load -> running and vice versa.
 		public int AutoSplitterJitterToleranceFrames = 8;
@@ -50,7 +64,7 @@ namespace LiveSplit.UI.Components
 
 		private float cropOffsetX = 0.0f;
 
-		private float cropOffsetY = -40.0f;
+		private float cropOffsetY = -460.0f;
 
 		private bool drawingPreview = false;
 
@@ -98,9 +112,49 @@ namespace LiveSplit.UI.Components
 
 		#region Public Constructors
 
+		private string LoadRemoverDataName = "";
+
+		public class Binder : System.Runtime.Serialization.SerializationBinder
+		{
+			public override Type BindToType(string assemblyName, string typeName)
+			{
+				Assembly ass = Assembly.Load(assemblyName);
+				return ass.GetType(typeName);
+			}
+		}
+		
+		private void DeserializeAndUpdateDetectorData()
+		{
+			// TODO: hardcode this for FF7R. Potentially capture full window? not sure about performance...
+
+			//DetectorData data = DeserializeDetectorData(LoadRemoverDataName);
+
+			DetectorData data = new DetectorData();
+
+			data.sizeX = 600;
+			data.sizeY = 100;
+			data.numPatchesX = 12;
+			data.numPatchesY = 2;
+			captureSize.Width = data.sizeX;
+			captureSize.Height = data.sizeY;
+
+			
+			FeatureDetector.numberOfBins = 16;
+			FeatureDetector.patchSizeX = captureSize.Width / data.numPatchesX;
+			FeatureDetector.patchSizeY = captureSize.Height / data.numPatchesY;
+			
+		}
+
 		public BlackScreenDetectorComponentSettings(LiveSplitState state)
 		{
 			InitializeComponent();
+			
+			//RemoveFadeins = chkRemoveFadeIns.Checked;
+			DeserializeAndUpdateDetectorData();
+
+			RemoveFadeouts = chkRemoveTransitions.Checked;
+			RemoveFadeins = chkRemoveTransitions.Checked;
+			SaveDetectionLog = chkSaveDetectionLog.Checked;
 
 			AllGameAutoSplitSettings = new Dictionary<string, XmlElement>();
 			dynamicAutoSplitterControls = new List<Control>();
@@ -110,14 +164,63 @@ namespace LiveSplit.UI.Components
 			//processListComboBox.SelectedIndex = 0;
 			lblVersion.Text = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
 
+
 			RefreshCaptureWindowList();
 			//processListComboBox.SelectedIndex = 0;
 			DrawPreview();
+
+
 		}
 
 		#endregion Public Constructors
 
 		#region Public Methods
+
+		public void StoreCaptureImage(string gameName, string category)
+		{
+			System.IO.Directory.CreateDirectory(Path.Combine(DetectionLogFolderName, devToolsCaptureImageText.Text));
+
+			string capture_time = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff");
+
+			for (int offset_x = -4; offset_x <= 4; offset_x += 2)
+			{
+				for (int offset_y = -4; offset_y <= 4; offset_y += 2)
+				{
+					imageCaptureInfo.cropOffsetY = cropOffsetY + offset_y;
+					imageCaptureInfo.cropOffsetX = cropOffsetX + offset_x;
+					CaptureImageFullPreview(ref imageCaptureInfo, true);
+
+					string fileName = Path.Combine(DetectionLogFolderName, devToolsCaptureImageText.Text, "BlackScreenDetector_Log_" + capture_time + removeInvalidXMLCharacters(gameName) + "_" + removeInvalidXMLCharacters(category) + "_" + offset_x + "_" + offset_y + ".png");
+
+
+					using (MemoryStream memory = new MemoryStream())
+					{
+						using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
+						{
+							Bitmap capture = CaptureImage();
+							capture.Save(memory, ImageFormat.Png);
+							byte[] bytes = memory.ToArray();
+							fs.Write(bytes, 0, bytes.Length);
+						}
+					}
+				}
+
+			}
+
+
+			imageCaptureInfo.cropOffsetY = cropOffsetY;
+			imageCaptureInfo.cropOffsetX = cropOffsetX;
+			CaptureImageFullPreview(ref imageCaptureInfo, true);
+			devToolsCroppedPictureBox.Image = CaptureImage();
+
+
+		}
+
+		public void SetBlackLevel(int black_level)
+		{
+			AverageBlackLevel = black_level;
+			lblBlackLevel.Text = "Black-Level: " + AverageBlackLevel;
+		}
 
 		public Bitmap CaptureImage()
 		{
@@ -346,7 +449,9 @@ namespace LiveSplit.UI.Components
 
 			settingsNode.AppendChild(ToElement(document, "Version", Assembly.GetExecutingAssembly().GetName().Version.ToString(3)));
 
-			settingsNode.AppendChild(ToElement(document, "RequiredMatches", FeatureDetector.numberOfBinsCorrect));
+			settingsNode.AppendChild(ToElement(document, "MinimumBlackLength", MinimumBlackLength));
+
+			settingsNode.AppendChild(ToElement(document, "BlackLevel", BlackLevel));
 
 			if (captureIDs != null)
 			{
@@ -371,7 +476,9 @@ namespace LiveSplit.UI.Components
 
 			settingsNode.AppendChild(ToElement(document, "AutoSplitEnabled", enableAutoSplitterChk.Checked));
 			settingsNode.AppendChild(ToElement(document, "AutoSplitDisableOnSkipUntilSplit", chkAutoSplitterDisableOnSkip.Checked));
-			settingsNode.AppendChild(ToElement(document, "RemoveTransitions", chkRemoveTransitions.Checked));
+			settingsNode.AppendChild(ToElement(document, "RemoveFadeouts", chkRemoveTransitions.Checked));
+			//settingsNode.AppendChild(ToElement(document, "RemoveFadeins", chkRemoveFadeIns.Checked));
+			settingsNode.AppendChild(ToElement(document, "SaveDetectionLog", chkSaveDetectionLog.Checked));
 
 			var splitsNode = document.CreateElement("AutoSplitGames");
 
@@ -432,22 +539,14 @@ namespace LiveSplit.UI.Components
 					version = new Version(1, 0, 0);
 				}
 
-				if (element["RequiredMatches"] != null)
+				if (element["MinimumBlackLength"] != null)
 				{
-					//FeatureDetector.numberOfBinsCorrect = Convert.ToInt32(element["RequiredMatches"].InnerText);
+					requiredMatchesUpDown.Value = Convert.ToDecimal(element["MinimumBlackLength"].InnerText);
+				}
 
-					MinimumBlackScreenTime = Convert.ToDouble(element["RequiredMatches"].InnerText);
-
-					if (MinimumBlackScreenTime > (double) requiredMatchesUpDown.Maximum)
-					{
-						requiredMatchesUpDown.Value = 0;
-						FeatureDetector.numberOfBinsCorrect = 0;
-						MinimumBlackScreenTime = 0;
-					}
-					else
-					{
-						requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
-					}
+				if (element["BlackLevel"] != null)
+				{
+					blackLevelNumericUpDown.Value = Convert.ToDecimal(element["BlackLevel"].InnerText);
 				}
 
 				if (element["SelectedCaptureTitle"] != null)
@@ -501,10 +600,22 @@ namespace LiveSplit.UI.Components
 					chkAutoSplitterDisableOnSkip.Checked = Convert.ToBoolean(element["AutoSplitDisableOnSkipUntilSplit"].InnerText);
 				}
 
-				if (element["RemoveTransitions"] != null)
+				if (element["RemoveFadeouts"] != null)
 				{
-					chkRemoveTransitions.Checked = Convert.ToBoolean(element["RemoveTransitions"].InnerText);
+					chkRemoveTransitions.Checked = Convert.ToBoolean(element["RemoveFadeouts"].InnerText);
 				}
+
+				//if (element["RemoveFadeins"] != null)
+				//{
+				//  chkRemoveFadeIns.Checked = Convert.ToBoolean(element["RemoveFadeins"].InnerText);
+				//}
+				chkRemoveFadeIns.Checked = chkRemoveTransitions.Checked;
+
+				if (element["SaveDetectionLog"] != null)
+				{
+					chkSaveDetectionLog.Checked = Convert.ToBoolean(element["SaveDetectionLog"].InnerText);
+				}
+
 
 				if (element["AutoSplitGames"] != null)
 				{
@@ -529,7 +640,7 @@ namespace LiveSplit.UI.Components
 							var up_down_controls = tabPage2.Controls.Find(number_of_loads.LocalName, true);
 
 							//This can happen if the layout was not saved and contains old splits.
-							if(up_down_controls == null || up_down_controls.Length == 0)
+							if (up_down_controls == null || up_down_controls.Length == 0)
 							{
 								continue;
 							}
@@ -556,6 +667,9 @@ namespace LiveSplit.UI.Components
 				}
 
 				DrawPreview();
+
+				CaptureImageFullPreview(ref imageCaptureInfo, true);
+				devToolsCroppedPictureBox.Image = CaptureImage();
 			}
 		}
 
@@ -672,7 +786,7 @@ namespace LiveSplit.UI.Components
 			try
 			{
 
-			
+
 				ImageCaptureInfo copy = imageCaptureInfo;
 				copy.captureSizeX = previewPictureBox.Width;
 				copy.captureSizeY = previewPictureBox.Height;
@@ -711,14 +825,17 @@ namespace LiveSplit.UI.Components
 
 				//Show matching bins for preview
 				var capture = CaptureImage();
-				var features = FeatureDetector.featuresFromBitmap(capture);
+				List<int> dummy;
+				List<int> dummy2;
+				int black_level = 0;
+				var features = FeatureDetector.featuresFromBitmap(capture, out dummy, out black_level, out dummy2);
 				int tempMatchingBins = 0;
 				var isLoading = FeatureDetector.compareFeatureVector(features.ToArray(), FeatureDetector.listOfFeatureVectorsEng, out tempMatchingBins, -1.0f, false);
 
 				lastFeatures = features;
 				lastDiagnosticCapture = capture;
 				lastMatchingBins = tempMatchingBins;
-				matchDisplayLabel.Text = tempMatchingBins.ToString();
+				matchDisplayLabel.Text = Math.Round((Convert.ToSingle(tempMatchingBins) / Convert.ToSingle(FeatureDetector.listOfFeatureVectorsEng.GetLength(1))), 4).ToString();
 			}
 			catch (Exception ex)
 			{
@@ -738,17 +855,6 @@ namespace LiveSplit.UI.Components
 			selectionTopLeft = new Point(0, 0);
 			selectionBottomRight = new Point(previewPictureBox.Width, previewPictureBox.Height);
 			selectionRectanglePreviewBox = new Rectangle(selectionTopLeft.X, selectionTopLeft.Y, selectionBottomRight.X - selectionTopLeft.X, selectionBottomRight.Y - selectionTopLeft.Y);
-			//requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
-			if (FeatureDetector.numberOfBinsCorrect > requiredMatchesUpDown.Maximum)
-			{
-				requiredMatchesUpDown.Value = 0;
-				FeatureDetector.numberOfBinsCorrect = 0;
-				MinimumBlackScreenTime = 0;
-			}
-			else
-			{
-				requiredMatchesUpDown.Value = FeatureDetector.numberOfBinsCorrect;
-			}
 
 			imageCaptureInfo.featureVectorResolutionX = featureVectorResolutionX;
 			imageCaptureInfo.featureVectorResolutionY = featureVectorResolutionY;
@@ -835,13 +941,13 @@ namespace LiveSplit.UI.Components
 				//processListComboBox.SelectedIndex = 0;
 				processList = processes_with_name.ToArray();
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Console.WriteLine("Error: " + ex.ToString());
 			}
 		}
 
-		private string removeInvalidXMLCharacters(string in_string)
+		public string removeInvalidXMLCharacters(string in_string)
 		{
 			if (in_string == null) return null;
 
@@ -890,8 +996,7 @@ namespace LiveSplit.UI.Components
 
 		private void requiredMatchesUpDown_ValueChanged(object sender, EventArgs e)
 		{
-			FeatureDetector.numberOfBinsCorrect = (int) requiredMatchesUpDown.Value;
-			MinimumBlackScreenTime = (double) requiredMatchesUpDown.Value;
+			MinimumBlackLength = Convert.ToSingle(requiredMatchesUpDown.Value);
 		}
 
 		private void saveDiagnosticsButton_Click(object sender, EventArgs e)
@@ -914,7 +1019,7 @@ namespace LiveSplit.UI.Components
 				lastDiagnosticCapture.Save(fbd.SelectedPath + "/" + numCaptures.ToString() + "_DIAGNOSTIC_" + lastMatchingBins + ".jpg", ImageFormat.Jpeg);
 				saveFeatureVectorToTxt(lastFeatures, numCaptures.ToString() + "_FEATURES_" + lastMatchingBins + ".txt", fbd.SelectedPath);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Console.WriteLine("Error: " + ex.ToString());
 			}
@@ -954,6 +1059,20 @@ namespace LiveSplit.UI.Components
 			{
 				selectionBottomRight = new Point(x, y);
 			}
+
+			do_not_trigger_value_changed = true;
+			numTopLeftRectY.Value = selectionTopLeft.Y;
+
+			do_not_trigger_value_changed = true;
+			numTopLeftRectX.Value = selectionTopLeft.X;
+
+			do_not_trigger_value_changed = true;
+			numBottomRightRectY.Value = selectionBottomRight.Y;
+
+			do_not_trigger_value_changed = true;
+			numBottomRightRectX.Value = selectionBottomRight.X;
+
+
 
 			selectionRectanglePreviewBox = new Rectangle(selectionTopLeft.X, selectionTopLeft.Y, selectionBottomRight.X - selectionTopLeft.X, selectionBottomRight.Y - selectionTopLeft.Y);
 		}
@@ -1015,9 +1134,265 @@ namespace LiveSplit.UI.Components
 
 		private void chkRemoveTransitions_CheckedChanged(object sender, EventArgs e)
 		{
-			RemoveTransitions = chkRemoveTransitions.Checked;
+			RemoveFadeouts = chkRemoveTransitions.Checked;
+			RemoveFadeins = chkRemoveTransitions.Checked;
+		}
+
+		private void chkSaveDetectionLog_CheckedChanged(object sender, EventArgs e)
+		{
+			SaveDetectionLog = chkSaveDetectionLog.Checked;
+		}
+
+		private void chkRemoveFadeIns_CheckedChanged(object sender, EventArgs e)
+		{
+			//RemoveFadeins = chkRemoveFadeIns.Checked;
+			RemoveFadeins = chkRemoveTransitions.Checked;
+		}
+
+		private void devToolsCropX_ValueChanged(object sender, EventArgs e)
+		{
+			cropOffsetX = Convert.ToSingle(devToolsCropX.Value);
+			imageCaptureInfo.cropOffsetX = cropOffsetX;
+			CaptureImageFullPreview(ref imageCaptureInfo, true);
+			devToolsCroppedPictureBox.Image = CaptureImage();
+		}
+
+		private void devToolsCropY_ValueChanged(object sender, EventArgs e)
+		{
+			cropOffsetY = Convert.ToSingle(devToolsCropY.Value);
+			imageCaptureInfo.cropOffsetY = cropOffsetY;
+			CaptureImageFullPreview(ref imageCaptureInfo, true);
+			devToolsCroppedPictureBox.Image = CaptureImage();
+		}
+
+		private void devToolsRecord_CheckedChanged(object sender, EventArgs e)
+		{
+			RecordImages = devToolsRecord.Checked;
+		}
+
+		private bool IsFeatureUnique(DetectorData data, int[] feature)
+		{
+			int tempMatchingBins;
+			return !FeatureDetector.compareFeatureVector(feature, data.features, out tempMatchingBins, -1.0f, false);
+		}
+
+
+		private void ComputeDatabaseFromPath(string path)
+		{
+			DetectorData data = new DetectorData();
+			data.sizeX = captureSize.Width;
+			data.sizeY = captureSize.Height;
+			data.numberOfHistogramBins = 16;
+			data.numPatchesX = 6;
+			data.numPatchesY = 2;
+			data.offsetX = Convert.ToInt32(cropOffsetX);
+			data.offsetY = Convert.ToInt32(cropOffsetY);
+			data.features = new List<int[]>();
+
+			var files = System.IO.Directory.GetFiles(path);
+
+			float[] downsampling_factors = { 1, 2, 3 };
+			float[] brightness_values = { 1.0f, 0.97f, 1.03f };
+			float[] contrast_values = { 1.0f, 0.97f, 1.03f };
+			InterpolationMode[] interpolation_modes = { InterpolationMode.NearestNeighbor, InterpolationMode.Bicubic };
+
+			int previous_matching_bins = FeatureDetector.numberOfBinsCorrect;
+			FeatureDetector.numberOfBinsCorrect = 420;
+
+			foreach (string filename in files)
+			{
+
+				foreach (float downsampling_factor in downsampling_factors)
+				{
+					foreach (float brightness in brightness_values)
+					{
+						foreach (float contrast in contrast_values)
+						{
+							foreach (InterpolationMode interpolation_mode in interpolation_modes)
+							{
+
+								float gamma = 1.0f; // no change in gamma
+
+								float adjustedBrightness = brightness - 1.0f;
+								// create matrix that will brighten and contrast the image
+								// https://stackoverflow.com/a/15408608
+								float[][] ptsArray = {
+				  new float[] {contrast, 0, 0, 0, 0}, // scale red
+                  new float[] {0, contrast, 0, 0, 0}, // scale green
+                  new float[] {0, 0, contrast, 0, 0}, // scale blue
+                  new float[] {0, 0, 0, 1.0f, 0}, // don't scale alpha
+                  new float[] {adjustedBrightness, adjustedBrightness, adjustedBrightness, 0, 1}};
+
+								Bitmap bmp = new Bitmap(filename);
+
+								//Make 32 bit ARGB bitmap
+								Bitmap clone = new Bitmap(bmp.Width, bmp.Height,
+								  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+								//Make 32 bit ARGB bitmap
+								Bitmap sample_factor_clone = new Bitmap(Convert.ToInt32(bmp.Width / downsampling_factor), Convert.ToInt32(bmp.Height / downsampling_factor),
+								  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+								var attributes = new ImageAttributes();
+								attributes.SetWrapMode(WrapMode.TileFlipXY);
+
+
+								using (Graphics gr = Graphics.FromImage(sample_factor_clone))
+								{
+									gr.InterpolationMode = interpolation_mode;
+									gr.DrawImage(bmp, new Rectangle(0, 0, sample_factor_clone.Width, sample_factor_clone.Height), 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, attributes);
+								}
+
+								attributes.ClearColorMatrix();
+								attributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+								attributes.SetGamma(gamma, ColorAdjustType.Bitmap);
+
+								using (Graphics gr = Graphics.FromImage(clone))
+								{
+									gr.InterpolationMode = interpolation_mode;
+									gr.DrawImage(sample_factor_clone, new Rectangle(0, 0, clone.Width, clone.Height), 0, 0, sample_factor_clone.Width, sample_factor_clone.Height, GraphicsUnit.Pixel, attributes);
+								}
+
+								int black_level = 0;
+								List<int> max_per_patch = new List<int>();
+								List<int> min_per_patch = new List<int>();
+								int[] feature = FeatureDetector.featuresFromBitmap(clone, out max_per_patch, out black_level, out min_per_patch).ToArray();
+
+								if (IsFeatureUnique(data, feature))
+								{
+									data.features.Add(feature);
+								}
+
+
+								bmp.Dispose();
+								clone.Dispose();
+								sample_factor_clone.Dispose();
+							}
+						}
+					}
+
+				}
+
+
+			}
+
+			SerializeDetectorData(data, new DirectoryInfo(path).Name);
+			FeatureDetector.numberOfBinsCorrect = previous_matching_bins;
+		}
+
+		private void devToolsDatabaseButton_Click(object sender, EventArgs e)
+		{
+			using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
+			{
+				DialogResult result = fbd.ShowDialog();
+
+				if (result != DialogResult.OK)
+				{
+					return;
+				}
+
+				ComputeDatabaseFromPath(fbd.SelectedPath);
+
+			}
+
+
+
+		}
+
+		void SerializeDetectorData(DetectorData data, string path_suffix = "")
+		{
+			IFormatter formatter = new BinaryFormatter();
+			System.IO.Directory.CreateDirectory(Path.Combine(DetectionLogFolderName, "SerializedData"));
+			Stream stream = new FileStream(Path.Combine(DetectionLogFolderName, "SerializedData", "LiveSplit.BlackScreenDetector_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss_fff") + "_" + path_suffix + ".ctrnfdata"), FileMode.Create, FileAccess.Write);
+
+			formatter.Serialize(stream, data);
+			stream.Close();
+		}
+
+		DetectorData DeserializeDetectorData(string path)
+		{
+			IFormatter formatter = new BinaryFormatter();
+			Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+			formatter.Binder = new Binder();
+			DetectorData data = (DetectorData)formatter.Deserialize(stream);
+			stream.Close();
+			return data;
+		}
+
+		private void devToolsDataBaseFromCaptureImages_Click(object sender, EventArgs e)
+		{
+			ComputeDatabaseFromPath(Path.Combine(DetectionLogFolderName, devToolsCaptureImageText.Text));
+		}
+
+		private void trackBar1_Scroll(object sender, EventArgs e)
+		{
+
+		}
+
+		bool do_not_trigger_value_changed = false;
+
+		private void numericUpDown4_ValueChanged(object sender, EventArgs e)
+		{
+			if (do_not_trigger_value_changed == false)
+			{
+				SetRectangleFromMouse(new MouseEventArgs(MouseButtons.Left, 1, Convert.ToInt32(numTopLeftRectX.Value), Convert.ToInt32(numTopLeftRectY.Value), 0));
+				DrawPreview();
+			}
+			do_not_trigger_value_changed = false;
+		}
+
+		private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+		{
+			if (do_not_trigger_value_changed == false)
+			{
+				SetRectangleFromMouse(new MouseEventArgs(MouseButtons.Left, 1, Convert.ToInt32(numTopLeftRectX.Value), Convert.ToInt32(numTopLeftRectY.Value), 0));
+				DrawPreview();
+			}
+			do_not_trigger_value_changed = false;
+		}
+
+		private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+		{
+			if (do_not_trigger_value_changed == false)
+			{
+				SetRectangleFromMouse(new MouseEventArgs(MouseButtons.Right, 1, Convert.ToInt32(numBottomRightRectX.Value), Convert.ToInt32(numBottomRightRectY.Value), 0));
+				DrawPreview();
+			}
+			do_not_trigger_value_changed = false;
+		}
+
+		private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+		{
+			if (do_not_trigger_value_changed == false)
+			{
+				SetRectangleFromMouse(new MouseEventArgs(MouseButtons.Right, 1, Convert.ToInt32(numBottomRightRectX.Value), Convert.ToInt32(numBottomRightRectY.Value), 0));
+				DrawPreview();
+			}
+
+			do_not_trigger_value_changed = false;
+		}
+
+		private void blackLevelNumericUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			BlackLevel = Convert.ToInt32(blackLevelNumericUpDown.Value);
 		}
 	}
+
+	[Serializable]
+	public class DetectorData
+	{
+		public int offsetX;
+		public int offsetY;
+		public int sizeX;
+		public int sizeY;
+		public int numPatchesX;
+		public int numPatchesY;
+		public int numberOfHistogramBins;
+
+		public List<int[]> features;
+	}
+
+
 	public class AutoSplitData
 	{
 		#region Public Fields
