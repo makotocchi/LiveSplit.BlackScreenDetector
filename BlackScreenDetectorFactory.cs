@@ -33,9 +33,9 @@ namespace LiveSplit.PokemonRedBlue
         {
             get { return ComponentName; }
         }
-		public string UpdateURL => "https://raw.githubusercontent.com/thomasneff/LiveSplit.BlackScreenDetector/master/";
-		public string XMLURL => UpdateURL + "update.LiveSplit.BlackScreenDetector.xml";
-		
+
+        public string UpdateURL => "https://raw.githubusercontent.com/thomasneff/LiveSplit.BlackScreenDetector/master/";
+        public string XMLURL => UpdateURL + "update.LiveSplit.BlackScreenDetector.xml";
 
         public Version Version
         {

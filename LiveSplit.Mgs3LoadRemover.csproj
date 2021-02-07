@@ -7,9 +7,9 @@
     <ProjectGuid>{ECADE7E7-BA9B-487E-841E-048BB787D6F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiveSplit.BlackScreenDetector</RootNamespace>
-    <AssemblyName>LiveSplit.BlackScreenDetector</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>LiveSplit.Mgs3LoadRemover</RootNamespace>
+    <AssemblyName>LiveSplit.Mgs3LoadRemover</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitmapExtensions.cs" />
     <Compile Include="BlackScreenDetectorComponent.cs" />
     <Compile Include="BlackScreenDetectorFactory.cs" />
     <Compile Include="ComponentSettings.cs">
@@ -51,27 +52,30 @@
     <Compile Include="ComponentSettings.designer.cs">
       <DependentUpon>ComponentSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="DLLImportStuff.cs" />
     <Compile Include="FeatureDetector.cs" />
-    <Compile Include="HighResolutionTimer.cs" />
     <Compile Include="ImageCapture.cs" />
+    <Compile Include="ImageFeatures.cs" />
+    <Compile Include="Native\NativeEnums.cs" />
+    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\LiveSplit.Core\LiveSplit.Core.csproj">
-      <Project>{6de847db-20a3-4848-aeee-1b4364aecdfb}</Project>
-      <Name>LiveSplit.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\UpdateManager\UpdateManager.csproj">
-      <Project>{56dea3a0-2eb7-493b-b50f-a5e3aa8ae52a}</Project>
-      <Name>UpdateManager</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ComponentSettings.resx">
       <DependentUpon>ComponentSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\LiveSplit\LiveSplit\LiveSplit.Core\LiveSplit.Core.csproj">
+      <Project>{6de847db-20a3-4848-aeee-1b4364aecdfb}</Project>
+      <Name>LiveSplit.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LiveSplit\LiveSplit\UpdateManager\UpdateManager.csproj">
+      <Project>{56dea3a0-2eb7-493b-b50f-a5e3aa8ae52a}</Project>
+      <Name>UpdateManager</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
