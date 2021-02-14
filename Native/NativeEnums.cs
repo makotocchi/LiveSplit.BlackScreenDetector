@@ -1,4 +1,4 @@
-﻿namespace LiveSplit.BlackScreenDetector.Native
+﻿namespace LiveSplit.Mgs3LoadRemover.Native
 {
     internal class NativeEnums
     {

@@ -2,16 +2,22 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
-namespace LiveSplit.BlackScreenDetector
+namespace LiveSplit.Mgs3LoadRemover
 {
     internal static class BitmapExtensions
     {
-        public static Bitmap Crop(this Bitmap @this, Rectangle r)
+        /// <summary>
+        /// Crop the bitmap to the specified rectangle
+        /// </summary>
+        /// <param name="@this">The bitmap.</param>
+        /// <param name="rect">The rectangle that will be used for cropping (size and position).</param>
+        /// <returns></returns>
+        public static Bitmap Crop(this Bitmap @this, Rectangle rect)
         {
-            var nb = new Bitmap(r.Width, r.Height);
+            var nb = new Bitmap(rect.Width, rect.Height);
             using (Graphics g = Graphics.FromImage(nb))
             {
-                g.DrawImage(@this, -r.X, -r.Y);
+                g.DrawImage(@this, -rect.X, -rect.Y);
                 return nb;
             }
         }

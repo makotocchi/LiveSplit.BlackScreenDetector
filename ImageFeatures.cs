@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LiveSplit.BlackScreenDetector
+﻿namespace LiveSplit.Mgs3LoadRemover
 {
     public class ImageFeatures
     {
-        public ImageFeatures(IEnumerable<int> maxColorIntensityPerPatch, IEnumerable<int> minColorIntensityPerPatch)
-        {
-            MaxColorIntensityPerPatch = maxColorIntensityPerPatch ?? throw new ArgumentNullException(nameof(maxColorIntensityPerPatch));
-            MinColorIntensityPerPatch = minColorIntensityPerPatch ?? throw new ArgumentNullException(nameof(minColorIntensityPerPatch));
-        }
+        public int MaxColorIntensity { get; }
+        public int MinColorIntensity { get; }
 
-        public IEnumerable<int> MaxColorIntensityPerPatch { get; }
-        public IEnumerable<int> MinColorIntensityPerPatch { get; }
+        public ImageFeatures(int maxColorIntensity, int minColorIntensity)
+        {
+            MaxColorIntensity = maxColorIntensity;
+            MinColorIntensity = minColorIntensity;
+        }
     }
 }
